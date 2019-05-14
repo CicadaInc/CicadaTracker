@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% for task in tasks %}
+    <p>
+        <div class="text-question">
+            <a href="/single_question/{{ task.id }}">{{ task.title }}</a>
+            {% if my_quests %}
+                <a href="/index/1/{{ task.category }}">
+                    <span class="badge badge-primary">{{ task.category }}</span>
+                </a>
+            {% else %}
+                <a href="/index/0/{{ task.category }}">
+                    <span class="badge badge-primary">{{ task.category }}</span>
+                </a>
+            {% endif %}
+        </div>
+{% endfor %}
+
+{% endblock %}

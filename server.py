@@ -55,7 +55,8 @@ db.create_all()
 @app.route("/")
 @app.route("/index")
 def index():
-    return render_template("base.html", title="Cicada Tracker")
+    tasks = []
+    return render_template("main.html", title="Cicada Tracker", tasks=tasks)
 
 
 @app.route("/register")
