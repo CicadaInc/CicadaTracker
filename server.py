@@ -90,8 +90,9 @@ def login():
 @app.route("/task/<int:id>")
 def task(id):
     full_task = Task.query.filter_by(id=id).first()
-    print(full_task.title)
+    task_title = full_task.title
 
-    return render_template("single_task", title="Просмотр задачи")
+    return render_template("task.html", title="Просмотр задачи", task_title=task_title)
+
 
 app.run(port=8081, host='127.0.0.1')
