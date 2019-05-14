@@ -5,7 +5,9 @@ from database import *
 
 
 def as_dict(row):
-    return dict(row.__dict__)
+    r = dict(row.__dict__)
+    r.pop('_sa_instance_state', None)
+    return r
 
 
 def get_cuid():

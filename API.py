@@ -1,10 +1,10 @@
-from processing import *
 import os
 
 from flask import Blueprint, send_file, request, jsonify, session, current_app
 from werkzeug.utils import secure_filename
 
 from flask_restful import Api, Resource
+from processing import get_token, User, Task, as_dict, db
 
 api_app = Blueprint('API', __name__)
 api = Api(api_app)
@@ -28,7 +28,7 @@ def auth():
         return abort_json(404, 'User not found')
 
 
-class Task(Resource):
+class TaskResource(Resource):
     def get(self, tid=None):
         token = get_token()
         if token:
@@ -56,13 +56,15 @@ class Task(Resource):
             data = request.json
             if user:
                 error = []
-                if 'title' not in data:
+                if not data or 'title' not in data:
                     return abort_json(400, 'Title required')
-                db.session.add(Task(title=data['title'],
-                                    status=data.get('status', 'created'),
-                                    author_id=user.id,
-                                    worker_id=data.get('worker_id', None)))
+                task = Task(title=data['title'],
+                            status=data.get('status', 'created'),
+                            author_id=user.id,
+                            worker_id=data.get('worker_id', None))
+                db.session.add(task)
                 db.session.commit()
+                return {'success': True, 'error': '', 'data': as_dict(task)}
             else:
                 return abort_json(403, 'Invalid token')
         else:
@@ -77,11 +79,14 @@ class Task(Resource):
                     task = Task.query.filter_by(id=tid).first()
                     if task:
                         data = request.json
-                        for k in ['title', 'status', 'worker_id', 'author_id']:
-                            if k in data:
-                                setattr(task, k, data[k])
-                        db.session.commit()
-                        return {'success': True, 'error': '', 'data': as_dict(task)}
+                        if data:
+                            for k in ['title', 'status', 'worker_id', 'author_id']:
+                                if k in data:
+                                    setattr(task, k, data[k])
+                            db.session.commit()
+                            return {'success': True, 'error': '', 'data': as_dict(task)}
+                        else:
+                            return abort_json(400, 'Invalid request')
                     else:
                         return abort_json(404, 'Task not found')
                 else:
@@ -112,4 +117,4 @@ class Task(Resource):
             return abort_json(403, 'Token required')
 
 
-api.add_resource(Task, '/task', '/task/<int:tid>')
+api.add_resource(TaskResource, '/task', '/task/<int:tid>')
