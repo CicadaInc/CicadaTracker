@@ -2,20 +2,21 @@
 
 {% block content %}
 
+<div style="font-size: 24px; color: #343a40">Достпные задачи:</div>
+
 {% for task in tasks %}
-    <p>
-        <div class="text-question">
-            <a href="/single_question/{{ task.id }}">{{ task.title }}</a>
-            {% if my_quests %}
-                <a href="/index/1/{{ task.category }}">
-                    <span class="badge badge-primary">{{ task.category }}</span>
-                </a>
-            {% else %}
-                <a href="/index/0/{{ task.category }}">
-                    <span class="badge badge-primary">{{ task.category }}</span>
-                </a>
-            {% endif %}
-        </div>
+    <div class="text-question">
+        <a href="/task/{{ task.id }}" style="font-size: 24px">{{ task.title }}</a>
+        {% if my_quests %}
+            <a href="#" style="font-size: 18px">
+                <span class="badge badge-primary">{{ task.category }}</span>
+            </a>
+        {% else %}
+            <a href="#" style="font-size: 18px">
+                <span class="badge badge-primary">{{ task.category }}</span>
+            </a>
+        {% endif %}
+    </div>
 {% endfor %}
 
 {% endblock %}
