@@ -17,3 +17,9 @@ class RegistrationForm(FlaskForm):
     password = PasswordField(validators=[DataRequired()])
     password_confirm = PasswordField(validators=[DataRequired()])
     submit = SubmitField('Зарегистрироваться')
+
+
+class NewTask(FlaskForm):
+    title = StringField(validators=[DataRequired()])
+    status = 'Не выполнено'
+    category = StringField(validators=[DataRequired()])

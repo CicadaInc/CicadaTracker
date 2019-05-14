@@ -1,7 +1,7 @@
 from functions import get_token
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, url_for, session, redirect
-from forms import SingInForm, RegistrationForm
+from forms import SingInForm, RegistrationForm, NewTask
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Супер секретный мод на майнкрафт'
@@ -93,6 +93,12 @@ def task(id):
     task_title = full_task.title
 
     return render_template("task.html", title="Просмотр задачи", task_title=task_title)
+
+
+@app.route('/add_task')
+def add_task():
+    form = NewTask()
+    return render_template("new_task.html", title="Добавление задачи", form=form)
 
 
 app.run(port=8081, host='127.0.0.1')
