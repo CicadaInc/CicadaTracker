@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from random import choice
 from string import ascii_letters, digits
+import time
 
 
 def create_token():
@@ -29,11 +30,13 @@ class User(db.Model):
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(1000), unique=False, nullable=False)
+    description = db.Column(db.String(1000), unique=False, nullable=False)
     status = db.Column(db.String(50), unique=False, nullable=False)
     category = db.Column(db.String(80), unique=False, nullable=True)
     worker_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True, default=None)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     hidden = db.Column(db.Integer, unique=False, nullable=True)
+    time = db.Column(db.Integer, unique=False, nullable=False, default=time.time)
 
     def __repr__(self):
         return '<Task {} {} {} {} {}>'.format(
