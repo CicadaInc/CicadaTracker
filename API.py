@@ -35,7 +35,7 @@ class TaskResource(Resource):
             user = User.query.filter_by(token=token).first()
             if user:
                 if tid is not None:
-                    task = Task.query.filter_by(id=tid).first()
+                    task = Task.query.filter_by(id=tid).filter_by(author_id=user.id).first()
                     if task:
                         return as_dict(task)
                     else:
@@ -76,7 +76,7 @@ class TaskResource(Resource):
             user = User.query.filter_by(token=token).first()
             if user:
                 if tid is not None:
-                    task = Task.query.filter_by(id=tid).first()
+                    task = Task.query.filter_by(id=tid).filter_by(author_id=user.id).first()
                     if task:
                         data = request.json
                         if data:
