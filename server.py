@@ -63,7 +63,10 @@ def registration():
     form = RegistrationForm()
 
     if form.validate_on_submit():
-        pass
+        name = form.name + ' ' + form.surname + ' ' + form.patronymic
+        user = User(login=form.username, password=form.password, name=name)
+        db.session.add(user)
+        db.session.commit()
 
     return render_template("registration.html", form=form, title="Регистрация")
 
