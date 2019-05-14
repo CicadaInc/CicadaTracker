@@ -16,7 +16,7 @@ db = SQLAlchemy()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.String(80), unique=True, nullable=False, default=get_token)
+    token = db.Column(db.String(80), unique=True, nullable=False, default=create_token)
     login = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     name = db.Column(db.String(80), unique=False, nullable=False)

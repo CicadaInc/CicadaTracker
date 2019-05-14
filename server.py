@@ -66,7 +66,6 @@ def add_task():
     return render_template("new_task.html", title="Добавление задачи", form=form)
 
 
-
 if __name__ == '__main__':
     init_db(app)
     app.run(port=8080)
