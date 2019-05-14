@@ -1,6 +1,9 @@
-from flask import Flask
+from flask_wtf import FlaskForm
+from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from functions import get_token
+from wtforms import StringField, PasswordField, SubmitField
+from flask import Flask, render_template, url_for, session, redirect
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Супер секретный мод на майнкрафт'
@@ -13,13 +16,13 @@ db = SQLAlchemy(app)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     token = db.Column(db.String(80), unique=True, nullable=False, default=get_token)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    login = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     name = db.Column(db.String(80), unique=False, nullable=False)
 
     def __repr__(self):
         return '<User {} {} {} {} [}>'.format(
-            self.id, self.username, self.name, self.password, self.token)
+            self.id, self.login, self.name, self.password, self.token)
 
 
 class Task(db.Model):
@@ -49,3 +52,40 @@ class Comment(db.Model):
 
 
 db.create_all()
+
+
+class SingInForm(FlaskForm):
+    username = StringField(validators=[DataRequired()])
+    password = PasswordField(validators=[DataRequired()])
+    submit = SubmitField('Войти')
+
+
+class RegistrationForm(FlaskForm):
+    name = StringField(validators=[DataRequired()])
+    surname = StringField(validators=[DataRequired()])
+    patronymic = StringField(validators=[DataRequired()])
+    username = StringField(validators=[DataRequired()])
+    password = PasswordField(validators=[DataRequired()])
+    password_confirm = PasswordField(validators=[DataRequired()])
+    submit = SubmitField('Зарегистрироваться')
+
+
+@app.route("/")
+@app.route("/index")
+def index():
+    return render_template("base.html", title="Cicada Tracker")
+
+
+@app.route("/register")
+def registration():
+    form = RegistrationForm()
+    return render_template("registration.html", form=form, title="Регистрация")
+
+
+@app.route("/login")
+def login():
+    form = SingInForm()
+    return render_template("login.html", form=form, title="Авторизация")
+
+
+app.run(port=8081, host='127.0.0.1')
