@@ -1,9 +1,7 @@
-from flask import Flask
-from flask_wtf import FlaskForm
-from wtforms.validators import DataRequired
+from functions import get_token
 from flask_sqlalchemy import SQLAlchemy
-from wtforms import StringField, PasswordField, SubmitField
 from flask import Flask, render_template, url_for, session, redirect
+from forms import SingInForm, RegistrationForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Супер секретный мод на майнкрафт'
@@ -15,30 +13,32 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    token = db.Column(db.String(80), unique=True, nullable=False, default=get_token)
+    login = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     name = db.Column(db.String(80), unique=False, nullable=False)
 
     def __repr__(self):
-        return '<User {} {} {}>'.format(
-            self.id, self.username, self.name)
+        return '<User {} {} {} {} [}>'.format(
+            self.id, self.login, self.name, self.password, self.token)
 
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(1000), unique=False, nullable=False)
     status = db.Column(db.String(50), unique=False, nullable=False)
+    category = db.Column(db.String(80), unique=False, nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     author = db.relationship('User', backref=db.backref('Task', lazy=True))
 
     def __repr__(self):
-        return '<Task {} {} {} {} {}>'.format(
-            self.id, self.title, self.status, self.author_id, self.author)
+        return '<Task {} {} {} {} {} {}>'.format(
+            self.id, self.title, self.status, self.category, self.author_id, self.author)
 
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String(1000), unique=False, nullable=False)
+    content = db.Column(db.String(80), unique=False, nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     author = db.relationship('User', backref=db.backref('Comment', lazy=True))
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
@@ -52,22 +52,6 @@ class Comment(db.Model):
 db.create_all()
 
 
-class SingInForm(FlaskForm):
-    username = StringField(validators=[DataRequired()])
-    password = PasswordField(validators=[DataRequired()])
-    submit = SubmitField('Войти')
-
-
-class RegistrationForm(FlaskForm):
-    name = StringField(validators=[DataRequired()])
-    surname = StringField(validators=[DataRequired()])
-    patronymic = StringField(validators=[DataRequired()])
-    username = StringField(validators=[DataRequired()])
-    password = PasswordField(validators=[DataRequired()])
-    password_confirm = PasswordField(validators=[DataRequired()])
-    submit = SubmitField('Зарегистрироваться')
-
-
 @app.route("/")
 @app.route("/index")
 def index():
@@ -77,12 +61,23 @@ def index():
 @app.route("/register")
 def registration():
     form = RegistrationForm()
+
+    if form.validate_on_submit():
+        name = form.name + ' ' + form.surname + ' ' + form.patronymic
+        user = User(login=form.username, password=form.password, name=name)
+        db.session.add(user)
+        db.session.commit()
+
     return render_template("registration.html", form=form, title="Регистрация")
 
 
 @app.route("/login")
 def login():
     form = SingInForm()
+
+    if form.validate_on_submit():
+        pass
+
     return render_template("login.html", form=form, title="Авторизация")
 
 
