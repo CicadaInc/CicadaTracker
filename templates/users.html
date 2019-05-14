@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% for user in users %}
+	{% if user.id != session['user_id'] %}
+	    <div style="font-size: 24px">{{ user.login }}</div>
+	    <a href="/add_admin/{{ user.id }}" class="btn btn-outline-info" style="font-size: 14px">Назначить администратором</a>
+	    <a href="/ban/{{ user.id }}" class="btn btn-outline-danger" style="font-size: 14px">Забанить</a>
+	{% endif %}
+{% endfor %}
+
+{% endblock %}

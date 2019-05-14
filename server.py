@@ -16,8 +16,39 @@ app.register_blueprint(api_app, url_prefix='/api')
 @app.route("/")
 @app.route("/index")
 def index():
-    tasks = [as_dict(e) for e in Task.query.all()]
-    return render_template("main.html", title="Cicada Tracker", tasks=tasks)
+    if session.get('user_id', None):
+        tasks = [as_dict(e) for e in Task.query.all()]
+        rights = User.query.filter_by(id=session['user_id']).first().rights
+        if rights != 'Админ':
+            return render_template("main.html", title="Cicada Tracker", tasks=tasks)
+        else:
+            return render_template("admin.html", title="Cicada Tracker")
+    return redirect('/login')
+
+
+@app.route("/users")
+def users():
+    users_list = User.query.all()
+
+    return render_template("users.html", title="База пользователей", users=users_list)
+
+
+@app.route("/add_admin/<int:id>")
+def add_admin(id):
+    user = User.query.filter_by(id=id).first()
+    user.rights = 'Админ'
+    db.session.commit()
+
+    return redirect("/users")
+
+
+@app.route("/ban/<int:id>")
+def ban(id):
+    user = User.query.filter_by(id=id).first()
+    user.rights = 'Забанен'
+    db.session.commit()
+
+    return redirect("/users")
 
 
 @app.route("/register", methods=['POST', 'GET'])
@@ -28,7 +59,7 @@ def registration():
         if not User.query.filter_by(login=form.username.data).first() \
                 and form.password.data == form.password_confirm.data:
             name = form.name.data + ' ' + form.surname.data + ' ' + form.patronymic.data
-            user = User(login=form.username.data, password=form.password.data, name=name)
+            user = User(login=form.username.data, password=form.password.data, name=name, rights='Пользователь')
             db.session.add(user)
             db.session.commit()
             return redirect("/login")

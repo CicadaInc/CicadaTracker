@@ -23,3 +23,4 @@ class NewTask(FlaskForm):
     title = StringField(validators=[DataRequired()])
     status = 'Не выполнено'
     category = StringField(validators=[DataRequired()])
+    submit = SubmitField('Добавить задачу')
