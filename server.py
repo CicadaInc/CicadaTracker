@@ -63,20 +63,29 @@ def registration():
     form = RegistrationForm()
 
     if form.validate_on_submit():
-        name = form.name + ' ' + form.surname + ' ' + form.patronymic
-        user = User(login=form.username, password=form.password, name=name)
-        db.session.add(user)
-        db.session.commit()
+        if not User.query.filter_by(login=form.username.data).first()\
+                and form.password.data == form.password_confirm.data:
+            name = form.name.data + ' ' + form.surname.data + ' ' + form.patronymic.data
+            user = User(login=form.username.data, password=form.password.data, name=name)
+            db.session.add(user)
+            db.session.commit()
+            return redirect("/login")
 
     return render_template("registration.html", form=form, title="Регистрация")
 
 
-@app.route("/login")
+@app.route("/login", methods=['POST', 'GET'])
 def login():
     form = SingInForm()
 
     if form.validate_on_submit():
-        pass
+        user = User.query.filter_by(login=form.username.data).filter_by(password=form.password.data).first()
+        if user:
+            session['user_id'] = user.id
+            session['user_name'] = user.name
+            session['token'] = user.token
+            print(session['user_id'])
+            return redirect("/index")
 
     return render_template("login.html", form=form, title="Авторизация")
 
