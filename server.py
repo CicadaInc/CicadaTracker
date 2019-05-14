@@ -69,7 +69,7 @@ def registration():
     form = RegistrationForm()
 
     if form.validate_on_submit():
-        if not User.query.filter_by(login=form.username.data).first()\
+        if not User.query.filter_by(login=form.username.data).first() \
                 and form.password.data == form.password_confirm.data:
             name = form.name.data + ' ' + form.surname.data + ' ' + form.patronymic.data
             user = User(login=form.username.data, password=form.password.data, name=name)
@@ -102,5 +102,6 @@ def task(id):
     print(full_task.title)
 
     return render_template("single_task", title="Просмотр задачи")
+
 
 app.run(port=8081, host='127.0.0.1')
