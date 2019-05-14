@@ -2,7 +2,11 @@ from flask import request, session, redirect, abort
 from flask import current_app as app
 from functools import wraps
 
-DATABASE = 'data.db'
+from database import *
+
+
+def as_dict(row):
+    return dict(row.__dict__)
 
 
 def get_cuid():
@@ -10,10 +14,14 @@ def get_cuid():
 
 
 def get_token():
-    return request.args.get('token', session.get('token', None))
+    json = request.json
+    if not json:
+        json = {}
+    print(request.args)
+    return request.args.get('token', json.get('token', session.get('token', None)))
 
 
-def token_valid():
+def token_valid(token):
     return True
 
 

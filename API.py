@@ -8,24 +8,42 @@ from flask_restful import Api, Resource
 
 api_app = Blueprint('API', __name__)
 api = Api(api_app)
-current_app.config['JSON_AS_ASCII'] = False
-current_app.config['RESTFUL_JSON'] = {'ensure_ascii': False}
-current_app.register_blueprint(api_app, url_prefix='/api')
 
 
 def abort_json(code, msg):
     return {'code': code, 'error': msg, 'success': False}, code
 
 
+@api_app.route('auth', methods=['POST'])
+def auth():
+    data = request.json
+    login = data.get('login', None)
+    password = data.get('password', None)
+    if not login or not password:
+        return abort_json(400, 'Login or password isnt supplied')
+    q = User.query.filter_by(login=login).filter_by(password=password).first()
+    if q:
+        return {'error': '', 'success': True, 'token': q.token}
+    else:
+        return abort_json(404, 'User not found')
+
+
 class Task(Resource):
     def get(self, tid=None):
         token = get_token()
         if token:
-            if token_valid():
+            user = User.query.filter_by(token=token).first()
+            if user:
                 if tid is not None:
-                    pass
+                    task = Task.query.filter_by(id=tid).first()
+                    if task:
+                        return as_dict(task)
+                    else:
+                        return abort_json(404, 'Task not found')
                 else:
-                    pass
+                    return {'success': True,
+                            'data': [as_dict(e) for e in Task.query.filter_by(author_id=user.id).all()],
+                            'error': ''}
             else:
                 return abort_json(403, 'Invalid token')
         else:
@@ -34,8 +52,17 @@ class Task(Resource):
     def post(self):
         token = get_token()
         if token:
-            if token_valid():
-                pass
+            user = User.query.filter_by(token=token).first()
+            data = request.json
+            if user:
+                error = []
+                if 'title' not in data:
+                    return abort_json(400, 'Title required')
+                db.session.add(Task(title=data['title'],
+                                    status=data.get('status', 'created'),
+                                    author_id=user.id,
+                                    worker_id=data.get('worker_id', None)))
+                db.session.commit()
             else:
                 return abort_json(403, 'Invalid token')
         else:
@@ -44,11 +71,21 @@ class Task(Resource):
     def put(self, tid):
         token = get_token()
         if token:
-            if token_valid():
+            user = User.query.filter_by(token=token).first()
+            if user:
                 if tid is not None:
-                    pass
+                    task = Task.query.filter_by(id=tid).first()
+                    if task:
+                        data = request.json
+                        for k in ['title', 'status', 'worker_id', 'author_id']:
+                            if k in data:
+                                setattr(task, k, data[k])
+                        db.session.commit()
+                        return {'success': True, 'error': '', 'data': as_dict(task)}
+                    else:
+                        return abort_json(404, 'Task not found')
                 else:
-                    return abort_json(404, 'Task id required')
+                    return abort_json(400, 'Task id required')
             else:
                 return abort_json(403, 'Invalid token')
         else:
@@ -57,16 +94,22 @@ class Task(Resource):
     def delete(self, tid):
         token = get_token()
         if token:
-            if token_valid():
+            user = User.query.filter_by(token=token).first()
+            if user:
                 if tid is not None:
-                    pass
+                    task = Task.query.filter_by(id=tid).first()
+                    if task:
+                        task.delete()
+                        db.session.commit()
+                        return {'success': True, 'error': ''}
+                    else:
+                        return abort_json(404, 'Task not found')
                 else:
-                    return abort_json(404, 'Task id required')
+                    return abort_json(400, 'Task id required')
             else:
                 return abort_json(403, 'Invalid token')
         else:
             return abort_json(403, 'Token required')
 
 
-api.add_resource(Task, '/task')
-api.add_resource(Task, '/task/<int:pid>')
+api.add_resource(Task, '/task', '/task/<int:tid>')
