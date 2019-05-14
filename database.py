@@ -19,6 +19,7 @@ class User(db.Model):
     token = db.Column(db.String(80), unique=True, nullable=False, default=create_token)
     login = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
+    rights = db.Column(db.String(80), unique=False, nullable=False)
     name = db.Column(db.String(80), unique=False, nullable=False)
 
     def __repr__(self):
