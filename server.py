@@ -1,0 +1,48 @@
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'Супер секретный мод на майнкрафт'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contest.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(80), unique=False, nullable=False)
+    name = db.Column(db.String(80), unique=False, nullable=False)
+
+    def __repr__(self):
+        return '<User {} {} {}>'.format(
+            self.id, self.username, self.name)
+
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(1000), unique=False, nullable=False)
+    status = db.Column(db.String(50), unique=False, nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    author = db.relationship('User', backref=db.backref('Task', lazy=True))
+
+    def __repr__(self):
+        return '<Task {} {} {} {} {}>'.format(
+            self.id, self.title, self.status, self.author_id, self.author)
+
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(1000), unique=False, nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    author = db.relationship('User', backref=db.backref('Comment', lazy=True))
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
+    task = db.relationship('Task', backref=db.backref('Comment', lazy=True))
+
+    def __repr__(self):
+        return '<Task {} {} {} {} {} {}>'.format(
+            self.id, self.content, self.author_id, self.author, self.task_id, self.task)
+
+
+db.create_all()
