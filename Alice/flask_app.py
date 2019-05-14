@@ -5,6 +5,7 @@ from dialog_json_handler import Storage, Response, Button, Card
 from input_parser import Sentence
 from settings import logging, log_object
 import time
+import requests
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -58,7 +59,7 @@ def handle_state(user, resp):
             else:
                 spl = user.text.split(' ')
                 if len(spl) == 2:
-                    response = request.post(url + 'auth', json={'login': spl[0], 'password': spl[1]}).json()
+                    response = requests.post(url + 'auth', json={'login': spl[0], 'password': spl[1]}).json()
                     data = response.get('data', {})
                     if response.get('success', False):
                         user['token'] = data['token']
@@ -85,7 +86,7 @@ def handle_state(user, resp):
                         else:
                             resp.msg('Ошибка\n' + response['error'])
                     else:
-                        response = request.get(url + 'task', params={'token': user['token']}).json()
+                        response = requests.get(url + 'task', params={'token': user['token']}).json()
                         log_object(response)
                         if response['success']:
                             tasks = response['data']
