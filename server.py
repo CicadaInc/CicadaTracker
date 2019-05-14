@@ -8,6 +8,11 @@ app.config['SECRET_KEY'] = 'Супер секретный мод на майнк
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contest.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+
+def as_dict(row):
+    return dict(row.__dict__)
+
+
 db = SQLAlchemy(app)
 
 
@@ -55,7 +60,8 @@ db.create_all()
 @app.route("/")
 @app.route("/index")
 def index():
-    return render_template("base.html", title="Cicada Tracker")
+    tasks = [as_dict(e) for e in Task.query.all()]
+    return render_template("main.html", title="Cicada Tracker", tasks=tasks)
 
 
 @app.route("/register", methods=['POST', 'GET'])
@@ -89,5 +95,12 @@ def login():
 
     return render_template("login.html", form=form, title="Авторизация")
 
+
+@app.route("/task/<int:id>")
+def task(id):
+    full_task = Task.query.filter_by(id=id).first()
+    print(full_task.title)
+
+    return render_template("single_task", title="Просмотр задачи")
 
 app.run(port=8081, host='127.0.0.1')
