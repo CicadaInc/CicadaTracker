@@ -10,6 +10,7 @@ if not User.query.first():
     db.session.commit()
 else:
     u = User.query.first()
+print(u)
 print(as_dict(u))
 print(requests.get(url+'task').json())
 print(requests.get(url+'task?token=None').json())
@@ -30,3 +31,4 @@ print()
 print(requests.delete(url+'task/'+str(236327238236237236723732)).json())
 print(requests.delete(url+'task/'+str(r['id'])).json())
 print(requests.delete(url+'task/'+str(r['id']), params={'token': u.token}).json())
+print(requests.get(url+'task', params={'token': u.token}).json())

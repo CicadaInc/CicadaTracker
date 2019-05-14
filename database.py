@@ -33,6 +33,7 @@ class Task(db.Model):
     category = db.Column(db.String(80), unique=False, nullable=True)
     worker_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True, default=None)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    hidden = db.Column(db.Integer, unique=False, nullable=True)
 
     def __repr__(self):
         return '<Task {} {} {} {} {}>'.format(

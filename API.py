@@ -104,7 +104,8 @@ class TaskResource(Resource):
                 if tid is not None:
                     task = Task.query.filter_by(id=tid).first()
                     if task:
-                        task.delete()
+                        task.hidden = True
+                        # db.session.delete(task)
                         db.session.commit()
                         return {'success': True, 'error': ''}
                     else:
