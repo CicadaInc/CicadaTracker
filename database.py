@@ -30,7 +30,7 @@ class User(db.Model):
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(1000), unique=False, nullable=False)
-    description = db.Column(db.String(1000), unique=False, nullable=False)
+    description = db.Column(db.String(1000), unique=False, nullable=True)
     status = db.Column(db.String(50), unique=False, nullable=False)
     category = db.Column(db.String(80), unique=False, nullable=True)
     worker_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True, default=None)
@@ -46,7 +46,7 @@ class Task(db.Model):
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(80), unique=False, nullable=False)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     author = db.relationship('User', backref=db.backref('Comment', lazy=True))
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'), nullable=False)
     task = db.relationship('Task', backref=db.backref('Comment', lazy=True))

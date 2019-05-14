@@ -4,6 +4,7 @@ from APIs import GeoApi, MapsApi, SearchApi
 from dialog_json_handler import Storage, Response, Button, Card
 from input_parser import Sentence
 from settings import logging, log_object
+from server import db, Task, User
 import time
 import requests
 
@@ -11,7 +12,7 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
 hint = ''
-url = 'http://{}:8080/api/'.format('176.59.34.121')
+url = 'http://127.0.0.1:8080/api/'.format('176.59.34.121')
 
 
 @app.errorhandler(404)
@@ -59,13 +60,12 @@ def handle_state(user, resp):
             else:
                 spl = user.text.split(' ')
                 if len(spl) == 2:
-                    response = requests.post(url + 'auth', json={'login': spl[0], 'password': spl[1]}).json()
-                    data = response.get('data', {})
-                    if response.get('success', False):
-                        user['token'] = data['token']
-                        user.state = 1
+                    u = User.query.filter_by(login=spl[0], password=spl[1]).first()
+                    if u:
+                        user['token'] = u.token
+                        user['id'] = u.id
                     else:
-                        resp.ms('Произошла ошибка\n' + response['error'])
+                        resp.ms('Пользователь не найден')
                 else:
                     resp.msg('Недопустимый формат ввода')
             user.delay_up()
@@ -79,25 +79,22 @@ def handle_state(user, resp):
                     nums = user.entity(t='number')
                     if nums:
                         tid = int(nums[0])
-                        response = request.get(url + 'task/' + str(tid), params={'token': user['token']}).json()
-                        log_object(response)
-                        if response['success']:
-                            data = response['data']
+                        task = Task.query.filter_by(id=tid).filter_by(author_id=user['id']).first()
+                        if task:
+                            resp.msg('Всё ок')
                         else:
-                            resp.msg('Ошибка\n' + response['error'])
+                            resp.msg('Задание не найдено')
                     else:
-                        response = requests.get(url + 'task', params={'token': user['token']}).json()
-                        log_object(response)
-                        if response['success']:
-                            tasks = response['data']
+                        tasks = Task.query.filter_by(author_id=user['id']).all()
+                        if tasks:
                             for t in tasks:
                                 resp.msg('Задача {id} "{title}"\n   Дедлайн: {time}'.format(**{
-                                    'id': t['id'],
-                                    'title': t['title'],
-                                    'time': time.asctime(time.localtime())
+                                    'id': t.id,
+                                    'title': t.title,
+                                    'time': time.asctime(t.time)
                                 }))
                         else:
-                            resp.msg('Ошибка\n' + response['error'])
+                            resp.msg('Нет задаий')
             user.delay_up()
 
 
