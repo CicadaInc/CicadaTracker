@@ -59,6 +59,9 @@ class SingInForm(FlaskForm):
 
 
 class RegistrationForm(FlaskForm):
+    name = StringField(validators=[DataRequired()])
+    surname = StringField(validators=[DataRequired()])
+    patronymic = StringField(validators=[DataRequired()])
     username = StringField(validators=[DataRequired()])
     password = PasswordField(validators=[DataRequired()])
     password_confirm = PasswordField(validators=[DataRequired()])
