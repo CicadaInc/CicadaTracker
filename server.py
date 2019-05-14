@@ -1,9 +1,7 @@
-from flask_wtf import FlaskForm
-from wtforms.validators import DataRequired
-from flask_sqlalchemy import SQLAlchemy
 from functions import get_token
-from wtforms import StringField, PasswordField, SubmitField
+from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, url_for, session, redirect
+from forms import SingInForm, RegistrationForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Супер секретный мод на майнкрафт'
@@ -54,22 +52,6 @@ class Comment(db.Model):
 db.create_all()
 
 
-class SingInForm(FlaskForm):
-    username = StringField(validators=[DataRequired()])
-    password = PasswordField(validators=[DataRequired()])
-    submit = SubmitField('Войти')
-
-
-class RegistrationForm(FlaskForm):
-    name = StringField(validators=[DataRequired()])
-    surname = StringField(validators=[DataRequired()])
-    patronymic = StringField(validators=[DataRequired()])
-    username = StringField(validators=[DataRequired()])
-    password = PasswordField(validators=[DataRequired()])
-    password_confirm = PasswordField(validators=[DataRequired()])
-    submit = SubmitField('Зарегистрироваться')
-
-
 @app.route("/")
 @app.route("/index")
 def index():
@@ -79,12 +61,20 @@ def index():
 @app.route("/register")
 def registration():
     form = RegistrationForm()
+
+    if form.validate_on_submit():
+        pass
+
     return render_template("registration.html", form=form, title="Регистрация")
 
 
 @app.route("/login")
 def login():
     form = SingInForm()
+
+    if form.validate_on_submit():
+        pass
+
     return render_template("login.html", form=form, title="Авторизация")
 
 
