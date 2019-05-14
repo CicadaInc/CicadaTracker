@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+
+    <div>{{ form.name(class_="form-control", placeholder="Имя") }}</div>
+    <div>{{ form.surname(class_="form-control", placeholder="Фамилия") }}</div>
+    <div>{{ form.patronymic(class_="form-control", placeholder="Отчество") }}</div>
+    <div>{{ form.username(class_="form-control", placeholder="Логин") }}</div>
+    <div>{{ form.password(class_="form-control", placeholder="Пароль") }}</div>
+    <div>{{ form.password_confirm(class_="form-control", placeholder="Подтверждение пароля") }}</div>
+    <div>{{ form.submit(class_="btn btn-lg btn-success btn-block") }}</div>
+</form>
+
+{% endblock %}

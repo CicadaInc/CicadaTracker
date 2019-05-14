@@ -1,5 +1,4 @@
 from flask import request, session, redirect, abort
-from flask import current_app as app
 from functools import wraps
 
 from database import *

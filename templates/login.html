@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <div>{{ form.username(class_="form-control", placeholder="Логин") }}</div>
+    <div>{{ form.password(class_="form-control", placeholder="Пароль") }}</div>
+    <div>{{ form.submit(class_="btn btn-lg btn-success btn-block") }}</div>
+</form>
+
+{% endblock %}
