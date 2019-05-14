@@ -1,5 +1,9 @@
 from flask import Flask
+from flask_wtf import FlaskForm
+from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
+from wtforms import StringField, PasswordField, SubmitField
+from flask import Flask, render_template, url_for, session, redirect
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Супер секретный мод на майнкрафт'
@@ -46,3 +50,37 @@ class Comment(db.Model):
 
 
 db.create_all()
+
+
+class SingInForm(FlaskForm):
+    username = StringField(validators=[DataRequired()])
+    password = PasswordField(validators=[DataRequired()])
+    submit = SubmitField('Войти')
+
+
+class RegistrationForm(FlaskForm):
+    username = StringField(validators=[DataRequired()])
+    password = PasswordField(validators=[DataRequired()])
+    password_confirm = PasswordField(validators=[DataRequired()])
+    submit = SubmitField('Зарегистрироваться')
+
+
+@app.route("/")
+@app.route("/index")
+def index():
+    return render_template("base.html", title="Cicada Tracker")
+
+
+@app.route("/register")
+def registration():
+    form = RegistrationForm()
+    return render_template("registration.html", form=form, title="Регистрация")
+
+
+@app.route("/login")
+def login():
+    form = SingInForm()
+    return render_template("login.html", form=form, title="Авторизация")
+
+
+app.run(port=8081, host='127.0.0.1')
