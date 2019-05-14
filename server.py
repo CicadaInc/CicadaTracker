@@ -83,12 +83,30 @@ def login():
     return render_template("login.html", form=form, title="Авторизация")
 
 
+@app.route("/delegate_to/<int:task_id>/<int:user_id>")
+def delegate_to(task_id, user_id):
+    Task.query.filter_by(id=task_id).first().worker = user_id
+    db.session.commit()
+
+    return redirect('/task/' + str(task_id))
+
+
+@app.route("/delegate/<int:task_id>")
+def delegate(task_id):
+    users = User.query.all()
+
+    return render_template("users_delegate.html", title="Делегирование", users=users, task_id=task_id)
+
+
 @app.route("/task/<int:id>")
 def task(id):
     full_task = Task.query.filter_by(id=id).first()
     task_title = full_task.title
 
-    return render_template("task.html", title="Просмотр задачи", task_title=task_title)
+    author_id = Task.query.filter_by(id=id).first().worker_id
+    user_login = User.query.filter_by(id=author_id).first().login
+
+    return render_template("task.html", title="Просмотр задачи", task_title=task_title, user=user_login, task_id=id)
 
 
 @app.route('/add_task', methods=['POST', 'GET'])

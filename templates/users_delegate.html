@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% for user in users %}
+	<div style="font-size: 24px">{{ user.login }}</div>
+	<a href="/delegate_to/{{ user.id }}/{{ task_id }}" class="btn btn-outline-warning" style="font-size: 14px">Делегировать</a>
+{% endfor %}
+
+{% endblock %}

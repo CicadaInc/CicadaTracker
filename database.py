@@ -32,7 +32,7 @@ class Task(db.Model):
     title = db.Column(db.String(1000), unique=False, nullable=False)
     status = db.Column(db.String(50), unique=False, nullable=False)
     category = db.Column(db.String(80), unique=False, nullable=False)
-    worker_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True, default=None)
+    worker_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
