@@ -58,7 +58,7 @@ def index():
     return render_template("base.html", title="Cicada Tracker")
 
 
-@app.route("/register")
+@app.route("/register", methods=['POST', 'GET'])
 def registration():
     form = RegistrationForm()
 
