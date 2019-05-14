@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from functions import get_token
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Супер секретный мод на майнкрафт'
@@ -11,14 +12,14 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    token = db.Column(db.String(80), unique=True, nullable=False)
+    token = db.Column(db.String(80), unique=True, nullable=False, default=get_token)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     name = db.Column(db.String(80), unique=False, nullable=False)
 
     def __repr__(self):
-        return '<User {} {} {}>'.format(
-            self.id, self.username, self.name)
+        return '<User {} {} {} {} [}>'.format(
+            self.id, self.username, self.name, self.password, self.token)
 
 
 class Task(db.Model):
