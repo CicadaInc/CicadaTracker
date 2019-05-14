@@ -91,9 +91,22 @@ def task(id):
     return render_template("task.html", title="Просмотр задачи", task_title=task_title)
 
 
-@app.route('/add_task')
+@app.route('/add_task', methods=['POST', 'GET'])
 def add_task():
+    user_id = session.get('user_id')
+    user_rights = User.query.filter_by(id=user_id).first().rights
+    if user_rights == 'Забанен':
+        return redirect('/index')
     form = NewTask()
+    if form.validate_on_submit():
+        title = form.title.data
+        category = form.category.data
+
+        db.session.add(Task(title=title, category=category, author_id=session['user_id'], status='Created'))
+        db.session.commit()
+
+        return redirect('/index')
+
     return render_template("new_task.html", title="Добавление задачи", form=form)
 
 

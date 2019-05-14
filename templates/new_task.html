@@ -2,8 +2,11 @@
 
 {% block content %}
 
-<div class="py-1">{{ form.title(class_="form-control", placeholder="Задача") }}</div>
-<div class="py-1">{{ form.category(class_="form-control", placeholder="Категория") }}</div>
-<div class="py-1">{{ form.submit(class_="btn btn-lg btn-success btn-block") }}</div>
+<form action="" method="post">
+	{{ form.hidden_tag() }}
+	<div class="py-1">{{ form.title(class_="form-control", placeholder="Задача") }}</div>
+	<div class="py-1">{{ form.category(class_="form-control", placeholder="Категория") }}</div>
+	<div class="py-1">{{ form.submit(class_="btn btn-lg btn-success btn-block") }}</div>
+</form>
 
 {% endblock %}

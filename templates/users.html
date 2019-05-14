@@ -4,9 +4,15 @@
 
 {% for user in users %}
 	{% if user.id != session['user_id'] %}
-	    <div style="font-size: 24px">{{ user.login }}</div>
-	    <a href="/add_admin/{{ user.id }}" class="btn btn-outline-info" style="font-size: 14px">Назначить администратором</a>
-	    <a href="/ban/{{ user.id }}" class="btn btn-outline-danger" style="font-size: 14px">Забанить</a>
+		    <div style="font-size: 24px">{{ user.login }}</div>
+		    {% if user.rights != 'Забанен' %}
+		    {% if user.rights != 'Админ' %}
+		    	<a href="/add_admin/{{ user.id }}" class="btn btn-outline-info" style="font-size: 14px">Назначить администратором</a>
+		    {% endif %}
+		    <a href="/ban/{{ user.id }}" class="btn btn-outline-danger" style="font-size: 14px">Забанить</a>
+		{% else %}
+			<div style="color: red">Забанен</div>
+		{% endif %}
 	{% endif %}
 {% endfor %}
 
