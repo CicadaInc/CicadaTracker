@@ -16,7 +16,8 @@ app.register_blueprint(api_app, url_prefix='/api')
 @app.route("/")
 @app.route("/index")
 def index():
-    return render_template("base.html", title="Cicada Tracker")
+    tasks = [as_dict(e) for e in Task.query.all()]
+    return render_template("main.html", title="Cicada Tracker", tasks=tasks)
 
 
 @app.route("/register", methods=['POST', 'GET'])
@@ -49,6 +50,14 @@ def login():
             return redirect("/index")
 
     return render_template("login.html", form=form, title="Авторизация")
+
+
+@app.route("/task/<int:id>")
+def task(id):
+    full_task = Task.query.filter_by(id=id).first()
+    print(full_task.title)
+
+    return render_template("single_task", title="Просмотр задачи")
 
 
 if __name__ == '__main__':

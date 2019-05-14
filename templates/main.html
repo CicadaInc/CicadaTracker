@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div style="font-size: 24px; color: #343a40">Достпные задачи:</div>
+
+{% for task in tasks %}
+    <div class="text-question">
+        <a href="/task/{{ task.id }}" style="font-size: 24px">{{ task.title }}</a>
+        {% if my_quests %}
+            <a href="#" style="font-size: 18px">
+                <span class="badge badge-primary">{{ task.category }}</span>
+            </a>
+        {% else %}
+            <a href="#" style="font-size: 18px">
+                <span class="badge badge-primary">{{ task.category }}</span>
+            </a>
+        {% endif %}
+    </div>
+{% endfor %}
+
+{% endblock %}
